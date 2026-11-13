@@ -1,0 +1,33 @@
+# MC74 VideoCore graphics/media stack, taken from this unit's stock system (4.2.3-meraki, phone-58)
+bin/vclmk
+bin/tvserver
+lib/libvchiq.so
+lib/libvcos.so
+lib/libvcsm.so
+lib/libWFC.so
+lib/libsystrace.so
+lib/libmmal.so
+lib/libmmal_components.so
+lib/libmmal_util.so
+lib/libmmal_vc.so
+lib/libomxmmal.so
+lib/libcontainers.so
+lib/libbufmgmt.so
+lib/libbufpool.so
+lib/libdebug_sym.so
+lib/libtvservice.so
+lib/libtvservice_binder.so
+lib/libvcfiled.so
+lib/libstagefrighthw.so
+lib/libcorkscrew.so
+lib/libgccdemangle.so
+vendor/lib/egl/libGLES_vc4.so
+vendor/lib/hw/gralloc.capri.so
+vendor/lib/hw/hwcomposer.capri.so
+
+# Wi-Fi firmware (BCM4339), renamed for brcmfmac
+vendor/firmware/fw_wifi.bin:etc/firmware/brcm/brcmfmac4339-sdio.bin
+vendor/firmware/fw_wifi_nvram.txt:etc/firmware/brcm/brcmfmac4339-sdio.txt
+
+# Bluetooth patch (BCM4339)
+vendor/firmware/BCM4339_003.001.009.0083.0408.hcd

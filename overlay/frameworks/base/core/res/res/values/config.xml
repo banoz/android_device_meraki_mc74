@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Ethernet is the only network on the MC74 -->
+    <string-array translatable="false" name="networkAttributes">
+        <item>"ethernet,9,9,2,-1,true"</item>
+    </string-array>
+    <string-array translatable="false" name="radioAttributes">
+        <item>"9,1"</item>
+    </string-array>
+    <string translatable="false" name="config_ethernet_iface_regex">eth\\d</string>
+    <!-- Auto-brightness from the CM3232 light sensor (sensors.capri reports raw
+         counts: ~0 covered/dark, ~120 office, several hundred bright) -->
+    <bool name="config_automatic_brightness_available">true</bool>
+    <integer-array name="config_autoBrightnessLevels">
+        <item>5</item>
+        <item>20</item>
+        <item>50</item>
+        <item>100</item>
+        <item>200</item>
+        <item>400</item>
+    </integer-array>
+    <integer-array name="config_autoBrightnessLcdBacklightValues">
+        <item>25</item>
+        <item>50</item>
+        <item>90</item>
+        <item>140</item>
+        <item>190</item>
+        <item>230</item>
+        <item>255</item>
+    </integer-array>
+    <!-- Wall panel: default to full backlight -->
+    <integer name="config_screenBrightnessSettingDefault">255</integer>
+    <!-- No hardware keys: show the on-screen navigation bar -->
+    <bool name="config_showNavigationBar">true</bool>
+    <!-- Fixed landscape wall panel: no rotation -->
+    <bool name="config_supportAutoRotation">false</bool>
+    <!-- Front RGBW LED (PCA9632) for notifications -->
+    <bool name="config_intrusiveNotificationLed">true</bool>
+</resources>

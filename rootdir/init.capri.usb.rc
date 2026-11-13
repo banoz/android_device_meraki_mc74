@@ -1,0 +1,3 @@
+# The adb gadget is configured by system/core/rootdir/init.usb.rc
+# (sys.usb.config=adb && sys.usb.configfs=0); a second trigger here made
+# the gadget enable/disable/enable while the PC was enumerating it.

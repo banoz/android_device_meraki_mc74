@@ -1,0 +1,7 @@
+# /proc/vc-* and /dev/vc-* setup in init.capri.rc
+allow init gpu_device:chr_file rw_file_perms;
+allow init serial_device:chr_file { write ioctl };
+allow init tmpfs:lnk_file create;
+allow init debugfs:file write;
+# Wi-Fi modules (insmod from init.capri.rc)
+allow init self:capability sys_module;

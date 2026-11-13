@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Wall panel: keep the screen on (30 min) -->
+    <integer name="def_screen_off_timeout">1800000</integer>
+    <!-- Stay awake while powered over USB/AC -->
+    <bool name="def_stay_on_while_plugged_in">true</bool>
+    <!-- Fixed landscape wall panel: no auto-rotate -->
+    <bool name="def_accelerometer_rotation">false</bool>
+    <!-- No lock screen by default (its only content would be a fake "Charged" line) -->
+    <bool name="def_lockscreen_disabled">true</bool>
+</resources>

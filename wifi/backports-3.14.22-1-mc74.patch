@@ -1,0 +1,36 @@
+--- a/drivers/net/wireless/brcm80211/brcmfmac/bcmsdh.c
++++ b/drivers/net/wireless/brcm80211/brcmfmac/bcmsdh.c
+@@ -960,6 +960,7 @@
+ 	{SDIO_DEVICE(SDIO_VENDOR_ID_BROADCOM, SDIO_DEVICE_ID_BROADCOM_43362)},
+ 	{SDIO_DEVICE(SDIO_VENDOR_ID_BROADCOM,
+ 		     SDIO_DEVICE_ID_BROADCOM_4335_4339)},
++	{SDIO_DEVICE(SDIO_VENDOR_ID_BROADCOM, 0x4339)},	/* MC74 BCM4339 */
+ 	{ /* end: all zeroes */ },
+ };
+ MODULE_DEVICE_TABLE(sdio, brcmf_sdmmc_ids);
+--- a/drivers/net/wireless/brcm80211/brcmfmac/sdio_chip.c
++++ b/drivers/net/wireless/brcm80211/brcmfmac/sdio_chip.c
+@@ -475,8 +475,7 @@
+ 				    NULL);
+ 	ci->chip = regdata & CID_ID_MASK;
+ 	ci->chiprev = (regdata & CID_REV_MASK) >> CID_REV_SHIFT;
+-	if (sdiodev->func[0]->device == SDIO_DEVICE_ID_BROADCOM_4335_4339 &&
+-	    ci->chiprev >= 2)
++	if (ci->chip == BCM4335_CHIP_ID && ci->chiprev >= 2)
+ 		ci->chip = BCM4339_CHIP_ID;
+ 	socitype = (regdata & CID_TYPE_MASK) >> CID_TYPE_SHIFT;
+ 
+--- a/backport-include/linux/fs.h
++++ b/backport-include/linux/fs.h
+@@ -23,10 +23,7 @@
+  *
+  *     new helper: file_inode(file)
+  */
+-static inline struct inode *file_inode(struct file *f)
+-{
+-	return f->f_path.dentry->d_inode;
+-}
++/* MC74: the Samsung 3.0.101 kernel already has file_inode() */
+ #endif
+ 
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,35)

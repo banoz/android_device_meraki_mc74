@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- MC74 is PoE powered, no battery: hide the battery icon (4 = hidden) -->
+    <integer name="def_battery_style">4</integer>
+</resources>

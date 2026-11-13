@@ -1,0 +1,12 @@
+# Meraki MC74 layout:
+#   /system on the stock userdata partition (p24, backup on the PC)
+#   /data   on system2 (p18, the former Alpine rescue copy, backup on the PC)
+#   /cache  in RAM (small tmpfs from init.capri.rc)
+#   Stock system (p17) and the dashboard root (p23) are not mounted.
+#<src>                                         <mnt_point>  <type> <mnt_flags and options>                            <fs_mgr_flags>
+/dev/block/platform/sdhci.1/by-name/userdata   /system      ext4   ro,noatime                                         wait
+/dev/block/platform/sdhci.1/by-name/system2    /data        ext4   noatime,nosuid,nodev,noauto_da_alloc,errors=panic  wait,check
+/dev/block/platform/sdhci.1/by-name/boot       /boot        emmc   defaults                                           defaults
+/dev/block/platform/sdhci.1/by-name/recovery   /recovery    emmc   defaults                                           defaults
+
+/dev/block/zram0                               none         swap   defaults                                           zramsize=134217728,zramstreams=2

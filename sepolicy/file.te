@@ -1,0 +1,1 @@
+type mc74_sysfs_backlight, fs_type, sysfs_type;

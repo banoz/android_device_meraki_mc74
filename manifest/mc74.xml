@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- LineageOS 14.1 for the Cisco Meraki MC74. Copy to .repo/local_manifests/ in a
+     `repo init -u https://github.com/LineageOS/android.git -b cm-14.1` checkout. -->
+<manifest>
+  <remote name="banoz" fetch="https://github.com/banoz/" />
+
+  <!-- MC74 trees -->
+  <project path="device/meraki/mc74" name="android_device_meraki_mc74" remote="banoz" revision="cm-14.1" />
+  <project path="kernel/meraki/mc74" name="android_kernel_meraki_mc74" remote="banoz" revision="cm-14.1" />
+  <!-- private: the MC74's own Broadcom VideoCore libraries (see vendor README in the device tree) -->
+  <project path="vendor/meraki/mc74" name="proprietary_vendor_meraki_mc74" remote="banoz" revision="cm-14.1" />
+
+  <!-- LineageOS projects with MC74 / I9082-compat changes -->
+  <remove-project name="LineageOS/android_frameworks_av" />
+  <project path="frameworks/av" name="android_frameworks_av" remote="banoz" revision="cm-14.1" />
+  <remove-project name="LineageOS/android_frameworks_native" />
+  <project path="frameworks/native" name="android_frameworks_native" remote="banoz" revision="cm-14.1" />
+  <remove-project name="LineageOS/android_system_core" />
+  <project path="system/core" name="android_system_core" remote="banoz" revision="cm-14.1" />
+  <remove-project name="LineageOS/cm_platform_sdk" />
+  <project path="vendor/cmsdk" name="cm_platform_sdk" remote="banoz" revision="cm-14.1" />
+  <remove-project name="LineageOS/android_packages_apps_CMParts" />
+  <project path="packages/apps/CMParts" name="android_packages_apps_CMParts" remote="banoz" revision="cm-14.1" />
+  <remove-project name="LineageOS/android_vendor_cm" />
+  <project path="vendor/cm" name="android_vendor_cm" remote="banoz" revision="cm-14.1" />
+
+  <!-- not needed for an arm32 wall panel; saves several GB -->
+  <remove-project name="LineageOS/android_external_chromium-webview_prebuilt_arm64" />
+  <remove-project name="LineageOS/android_external_chromium-webview_prebuilt_x86" />
+  <remove-project name="LineageOS/android_external_chromium-webview_prebuilt_x86_64" />
+  <remove-project name="LineageOS/android_prebuilts_gcc_darwin-x86_aarch64_aarch64-linux-android-4.9" />
+  <remove-project name="LineageOS/android_prebuilts_gcc_darwin-x86_arm_arm-linux-androideabi-4.9" />
+  <remove-project name="LineageOS/android_prebuilts_gcc_darwin-x86_x86_x86_64-linux-android-4.9" />
+  <remove-project name="LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9" />
+  <remove-project name="LineageOS/android_prebuilts_gcc_linux-x86_x86_x86_64-linux-android-4.9" />
+  <remove-project name="device/generic/arm64" />
+  <remove-project name="device/generic/x86" />
+  <remove-project name="device/generic/x86_64" />
+  <remove-project name="platform/prebuilts/android-emulator" />
+  <remove-project name="platform/prebuilts/clang/darwin-x86/host/3.6" />
+  <remove-project name="platform/prebuilts/clang/host/darwin-x86" />
+  <remove-project name="platform/prebuilts/gcc/darwin-x86/arm/arm-eabi-4.8" />
+  <remove-project name="platform/prebuilts/gcc/darwin-x86/host/i686-apple-darwin-4.2.1" />
+  <remove-project name="platform/prebuilts/gdb/darwin-x86" />
+  <remove-project name="platform/prebuilts/go/darwin-x86" />
+  <remove-project name="platform/prebuilts/ninja/darwin-x86" />
+  <remove-project name="platform/prebuilts/python/darwin-x86/2.7.5" />
+  <remove-project name="platform/prebuilts/qemu-kernel" />
+</manifest>

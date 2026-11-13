@@ -1,0 +1,11 @@
+# Re-plugs the USB gadget once after boot (rootdir/mc74-usbcheck.sh, run as
+# "/system/bin/sh <script>" with seclabel u:r:mc74_usbcheck:s0)
+type mc74_usbcheck, domain;
+
+allow init mc74_usbcheck:process { transition siginh rlimitinh noatsecure };
+allow mc74_usbcheck init:process sigchld;
+allow mc74_usbcheck shell_exec:file { entrypoint rx_file_perms };
+allow mc74_usbcheck toolbox_exec:file rx_file_perms;
+allow mc74_usbcheck system_file:file rx_file_perms;
+allow mc74_usbcheck sysfs:file r_file_perms;
+set_prop(mc74_usbcheck, system_radio_prop)

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- MC74: Google software codecs (the VideoCore OMX components aren't wired up yet) -->
+<MediaCodecs>
+    <Include href="media_codecs_google_audio.xml" />
+    <Include href="media_codecs_google_telephony.xml" />
+    <Include href="media_codecs_google_video_le.xml" />
+</MediaCodecs>

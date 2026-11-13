@@ -1,0 +1,3 @@
+# Every exec asks for "personality-8" (PER_LINUX32), which a 32-bit kernel
+# never has; harmless.
+dontaudit domain kernel:system module_request;

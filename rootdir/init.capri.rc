@@ -1,0 +1,91 @@
+import /init.capri.usb.rc
+
+on early-init
+    mount debugfs /sys/kernel/debug /sys/kernel/debug mode=755
+
+on init
+    # VideoCore display info (stock MC74: 800x1280, 24 bpp, 160 dpi)
+    chmod 0660 /proc/vc-dnfo
+    write /proc/vc-dnfo "width 800"
+    write /proc/vc-dnfo "height 1280"
+    write /proc/vc-dnfo "scale 0"
+    write /proc/vc-dnfo "bpp 24"
+    write /proc/vc-dnfo "layer 1"
+    write /proc/vc-dnfo "xdpi 160"
+    write /proc/vc-dnfo "ydpi 160"
+    chmod 0660 /proc/vc-omx
+    write /proc/vc-omx "color 2"
+    chmod 0660 /proc/vc-hnfo
+    write /proc/vc-hnfo "resolution 16"
+    setprop brcm.graphics.async_errors true
+
+on fs
+    mount_all /fstab.capri
+    swapon_all /fstab.capri
+    # /cache in RAM (no spare partition); keep it small
+    mount tmpfs tmpfs /cache mode=0770,uid=1000,gid=2001,size=32m
+
+on post-fs-data
+    setprop vold.post_fs_data_done 1
+    mkdir /data/misc/dhcp 0770 dhcp dhcp
+    mkdir /data/misc/wifi 0770 wifi wifi
+    mkdir /data/misc/wifi/sockets 0770 wifi wifi
+    mkdir /data/misc/wifi/wpa_supplicant 0770 wifi wifi
+
+on boot
+    # bring-up: suspend isn't working on the MC74 yet, so never enter it
+    write /sys/power/wake_lock mc74_no_suspend
+    # backlight (lights HAL runs as system)
+    chown system system /sys/class/backlight/vc-display-bl/brightness
+    chmod 0664 /sys/class/backlight/vc-display-bl/brightness
+    chown system system /sys/class/backlight/mp3309/brightness
+    chmod 0664 /sys/class/backlight/mp3309/brightness
+    chmod 0770 /proc/vc
+    chmod 0770 /proc/vc/display
+    chmod 0660 /proc/vc/display/vchiq_control
+    chown system graphics /proc/vc/display/vchiq_control
+    write /proc/vc/display/vchiq_control "bypasssuspres "
+    setprop ethernet.interface eth0
+    # Bluetooth power (bcmbt rfkill, BT_REG_ON GPIO 82)
+    chown bluetooth bluetooth /sys/class/rfkill/rfkill0/type
+    chown bluetooth bluetooth /sys/class/rfkill/rfkill0/state
+    chmod 0660 /sys/class/rfkill/rfkill0/state
+    # Wi-Fi: BCM4339 (kernel powers it and emulates SDIO card insertion)
+    insmod /system/lib/modules/compat.ko
+    insmod /system/lib/modules/cfg80211.ko
+    insmod /system/lib/modules/brcmutil.ko
+    insmod /system/lib/modules/brcmfmac.ko
+    # low-memory tuning
+    write /sys/block/zram0/comp_algorithm lz4
+    write /proc/sys/vm/page-cluster 0
+    write /proc/sys/vm/swappiness 100
+
+service vclmk /system/bin/vclmk -s
+    class main
+    user system
+    group system graphics
+
+service tvservice /system/bin/tvserver
+    class main
+    user system
+    group system graphics
+
+service wpa_supplicant /system/bin/wpa_supplicant \
+    -iwlan0 -Dnl80211 -c/data/misc/wifi/wpa_supplicant.conf \
+    -I/system/etc/wifi/wpa_supplicant_overlay.conf \
+    -O/data/misc/wifi/sockets \
+    -e/data/misc/wifi/entropy.bin -g@android:wpa_wlan0
+    class main
+    socket wpa_wlan0 dgram 660 wifi wifi
+    disabled
+    oneshot
+
+# re-plug the USB gadget once if the PC never configured it
+on property:sys.boot_completed=1
+    start mc74_usbcheck
+
+service mc74_usbcheck /system/bin/sh /system/etc/mc74-usbcheck.sh
+    user root
+    seclabel u:r:mc74_usbcheck:s0
+    oneshot
+    disabled

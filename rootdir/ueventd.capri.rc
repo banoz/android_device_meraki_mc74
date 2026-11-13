@@ -1,0 +1,15 @@
+# VideoCore
+/dev/vchiq                0666   system     graphics
+/dev/vcsm                 0666   system     graphics
+/dev/vc-dnfo              0660   system     graphics
+/dev/vc-hnfo              0660   system     graphics
+/dev/vc-mem               0660   system     graphics
+/dev/vc-cma               0660   system     graphics
+/dev/vc-omx               0660   system     media
+/dev/vc-lmk               0666   system     system
+/dev/fb0                  0660   system     graphics
+/dev/hdmi0                0660   system     graphics
+/dev/user-gpio            0660   root       system
+/dev/bsc                  0660   root       system
+/dev/ttyS2                0660   bluetooth  bluetooth
+/dev/i2c-2                0660   system     system

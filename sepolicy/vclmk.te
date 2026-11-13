@@ -1,0 +1,13 @@
+type vclmk, domain, mlstrustedsubject;
+type vclmk_exec, file_type, exec_type;
+
+init_daemon_domain(vclmk)
+
+allow vclmk gpu_device:chr_file rw_file_perms;
+allow vclmk sysfs_lowmemorykiller:file r_file_perms;
+allow vclmk proc:file r_file_perms;
+
+# Read app state in /proc/pid and kill apps when VideoCore memory runs low
+allow vclmk domain:dir r_dir_perms;
+allow vclmk domain:file r_file_perms;
+allow vclmk appdomain:process { sigkill sigstop signal };
