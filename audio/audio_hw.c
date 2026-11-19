@@ -106,8 +106,9 @@ struct stream_out {
 
     struct listnode list_node;
 
-    /* MC74: routed to the handset earpiece (PCM device 1, mono) */
-    bool earpiece;
+    /* MC74 output: 0 speaker (hw:0,0), 1 handset earpiece (hw:0,1, mono),
+     * 2 headset jack (hw:0,2) */
+    int target;
     struct pcm_config proxy_config;     /* as prepared at open, for re-routing */
 
     void * conversion_buffer;           /* any conversions are put into here
@@ -370,7 +371,7 @@ static int out_dump(const struct audio_stream *stream, int fd) {
  * MC74 handset mode: the handset mic sits behind the "Handset Mic Switch"
  * (GPIO 5 + AUXMIC bias) on Mic2 and needs more gain than the handsfree mic.
  */
-static void mc74_set_handset_mode(bool on)
+static void mc74_set_handset_mode(bool on, int gain)
 {
     struct mixer *mixer = mixer_open(MC74_CARD);
     struct mixer_ctl *ctl;
@@ -384,17 +385,17 @@ static void mc74_set_handset_mode(bool on)
     if ((ctl = mixer_get_ctl_by_name(mixer, "Mic Capture Source")))
         mixer_ctl_set_enum_by_string(ctl, on ? "Mic2" : "Mic1");
     if ((ctl = mixer_get_ctl_by_name(mixer, "Mic Capture Volume")))
-        mixer_ctl_set_value(ctl, 0, on ? 63 : 37);
+        mixer_ctl_set_value(ctl, 0, gain);
     mixer_close(mixer);
     ALOGI("handset mode %s", on ? "on" : "off");
 }
 
-/* switch the output between the speaker (hw:0,0) and the earpiece (hw:0,1) */
-static void mc74_route_output(struct stream_out *out, bool earpiece)
+/* switch the output between the speaker, the earpiece and the headset */
+static void mc74_route_output(struct stream_out *out, int target, bool headset_mic)
 {
     struct pcm_config cfg;
 
-    if (earpiece == out->earpiece)
+    if (target == out->target)
         return;
     stream_lock(&out->lock);
     device_lock(out->adev);
@@ -402,15 +403,21 @@ static void mc74_route_output(struct stream_out *out, bool earpiece)
         proxy_close(&out->proxy);
         out->standby = true;
     }
-    out->profile->device = earpiece ? 1 : MC74_DEVICE;
+    out->profile->device = target;
     profile_read_device_info(out->profile);
     cfg = out->proxy_config;
     cfg.channels = profile_get_closest_channel_count(out->profile, out->hal_channel_count);
     proxy_prepare(&out->proxy, out->profile, &cfg);
-    out->earpiece = earpiece;
+    out->target = target;
     device_unlock(out->adev);
     stream_unlock(&out->lock);
-    mc74_set_handset_mode(earpiece);
+    /* the handset mic and a headset mic share the "Handset Mic" input */
+    if (target == 1)
+        mc74_set_handset_mode(true, 63);
+    else if (target == 2 && headset_mic)
+        mc74_set_handset_mode(true, 45);
+    else
+        mc74_set_handset_mode(false, 37);
 }
 
 static int out_set_parameters(struct audio_stream *stream, const char *kvpairs)
@@ -433,9 +440,11 @@ static int out_set_parameters(struct audio_stream *stream, const char *kvpairs)
             routing = atoi(value);
             /* AudioFlinger can re-send an earpiece route just after a call
              * ends; the earpiece is only used while a call mode is set */
-            if (routing)
+            if (routing & (AUDIO_DEVICE_OUT_WIRED_HEADSET | AUDIO_DEVICE_OUT_WIRED_HEADPHONE))
+                mc74_route_output(out, 2, (routing & AUDIO_DEVICE_OUT_WIRED_HEADSET) != 0);
+            else if (routing)
                 mc74_route_output(out, (routing & AUDIO_DEVICE_OUT_EARPIECE) &&
-                                       out->adev->mode != AUDIO_MODE_NORMAL);
+                                       out->adev->mode != AUDIO_MODE_NORMAL ? 1 : 0, false);
         }
         if (parms)
             str_parms_destroy(parms);
@@ -719,7 +728,7 @@ static int adev_open_output_stream(struct audio_hw_device *hw_dev,
     proxy_config.channels = profile_get_closest_channel_count(out->profile, out->hal_channel_count);
     proxy_prepare(&out->proxy, out->profile, &proxy_config);
     out->proxy_config = proxy_config;
-    out->earpiece = false;
+    out->target = 0;
 
     /* TODO The retry mechanism isn't implemented in AudioPolicyManager/AudioFlinger. */
     ret = 0;
@@ -1219,7 +1228,8 @@ static int adev_set_mode(struct audio_hw_device *hw_dev, audio_mode_t mode)
         return 0;
     list_for_each_safe(node, next, &adev->output_stream_list) {
         struct stream_out *out = node_to_item(node, struct stream_out, list_node);
-        mc74_route_output(out, false);
+        if (out->target == 1)
+            mc74_route_output(out, 0, false);
     }
     return 0;
 }

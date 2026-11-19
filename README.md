@@ -15,14 +15,14 @@ VideoCore graphics libraries, which match the unit's VideoCore firmware.
 | Ethernet | ESUB switch (backport of the mainline kona-esub driver, RX interrupt), network jack = switch port 1 |
 | Wi-Fi | BCM4339 on SDIO1 via backported brcmfmac (backports-3.14.22, see `wifi/README.md`) + stock firmware, nl80211 wpa_supplicant |
 | Bluetooth | BCM4339 on ttyS2 (BT_REG_ON GPIO 82), stock patch file, A2DP output |
-| Audio | handsfree speaker + mic, and the handset earpiece + handset mic (used in call/voice-chat mode): kernel ALSA card (`CONFIG_MC74_CAPH`, port of the mainline kona-caph driver) + AOSP usbaudio HAL pinned to hw:0,0 |
+| Audio | handsfree speaker + mic, and the handset earpiece + handset mic (used in call/voice-chat mode), and the headset jack (TS3A227E detection, stereo headset DAC, headset mic): kernel ALSA card (`CONFIG_MC74_CAPH`, port of the mainline kona-caph driver) + AOSP usbaudio HAL pinned to hw:0,0 |
 | Sensors | CM3232 ambient light (I2C bus 2) for auto-brightness |
 | Lights | backlight, front RGBW LED (PCA9632 on I2C bus 2, channel order W,G,R,B) for notifications |
 | USB | device-only transceiver, adb works; gadget re-plugged once after boot (the PC could enumerate it half-configured) |
 | L2 cache | on; Capri **A3** needs the same PL310 physical-address remap as A2 |
 | SELinux | enforcing |
 | UI | no battery UI, no lock screen by default, trimmed Quick Settings (PoE wall panel) |
-| Not yet | headset jack, proximity sensor (CM36283), suspend (blocked with a wakelock), the Meraki dialer |
+| Not yet | proximity sensor (CM36283), suspend (blocked with a wakelock), the Meraki dialer |
 
 ## Repositories (all branch `cm-14.1`)
 
